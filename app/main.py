@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.database import Base, engine
-from .api import users, tasks, checkins
+from .api import users, tasks, checkins, chat
 
 # 创建数据库表
 Base.metadata.create_all(bind=engine)
@@ -34,7 +34,7 @@ app.add_middleware(
 )
 
 
-@app.get("/", tags=["根路径"]) -*
+@app.get("/", tags=["根路径"])
 async def root():
     """根路径"""
     return {
@@ -55,6 +55,7 @@ async def health_check():
 app.include_router(users.router)
 app.include_router(tasks.router)
 app.include_router(checkins.router)
+app.include_router(chat.router)
 
 
 if __name__ == "__main__":

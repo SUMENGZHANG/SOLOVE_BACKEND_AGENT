@@ -55,19 +55,71 @@ solove_backend/
 
 ## 核心功能
 
-- 用户系统（注册/登录）
-- 任务管理（创建/分发/打卡）
-- Agent 聊天（AI 生成任务）
-- 定时推送（每日任务）
+### ✅ 已完成
+- **用户系统** - 注册/登录/用户信息管理
+- **Agent 聊天** - 情绪陪伴 AI（Qwen 模型）
+  - 温暖共情的对话风格
+  - 情绪识别与分析
+  - 智能生成建议任务（当用户情绪低落时）
+  - 对话历史持久化
+
+### 🚧 开发中
+- **任务管理** - 创建/分发/打卡
+- **定时推送** - 每日任务提醒
 
 ## 技术栈
 
 - **框架**: FastAPI
-- **数据库**: PostgreSQL
+- **数据库**: MySQL（`mysql+pymysql://...`）
 - **缓存**: Redis
 - **定时任务**: Celery
-- **AI**: 大模型 API
+- **AI**: Qwen（阿里云 DashScope）
 
-## 开发中
+## API 使用示例
 
-第一阶段 MVP 开发中...
+### 与 Agent 聊天
+
+```bash
+# 发送消息
+curl -X POST "http://localhost:8000/api/chat/?openid=your_user_id" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "我今天心情不太好"}'
+
+# 响应示例
+{
+  "response": "我能感受到你现在不太好受。没关系，我在这里陪着你...",
+  "suggested_tasks": [
+    {
+      "name": "深呼吸 3 次",
+      "description": "找个舒服的姿势，深呼吸 3 次...",
+      "category": "冥想",
+      "estimated_time": 2
+    }
+  ]
+}
+```
+
+### 获取聊天历史
+
+```bash
+curl "http://localhost:8000/api/chat/history?openid=your_user_id&limit=50"
+```
+
+## AI 配置
+
+使用阿里云 DashScope（Qwen 模型）：
+
+1. 获取 API Key: https://dashscope.console.aliyun.com/apiKey
+2. 在 `.env` 中配置：
+   ```
+   AI_API_KEY=your-dashscope-api-key
+   AI_API_BASE=https://dashscope.aliyuncs.com/compatible-mode/v1
+   AI_MODEL=qwen-plus
+   ```
+
+## 测试
+
+```bash
+# 运行聊天功能测试
+pytest tests/test_chat.py -v -s
+```
